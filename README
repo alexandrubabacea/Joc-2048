@@ -1,0 +1,173 @@
+----------------------------- Nume si Prenume -----------------------------
+
+Băbacea Alexandru
+
+---------------------------------- Grupa ----------------------------------
+
+311CC
+
+-------------------------------- Utilizare --------------------------------
+
+Compilare: make
+Rulare: make run
+
+La deschiderea aplicatiei apare meniul.
+Acesta are 3 optiuni: New Game, Resume si Quit.
+ 1) Optiunea New Game incepe un joc nou.
+ 2) Optiunea Resume revine la ultimul joc, daca
+   acesta nu s-a terminat.
+      Aceasta poate sa nu fie activa, ceea ce inseamna
+   ca nu exsita un joc deja existent.
+      Cand optiunea nu este activa scrisul va fi diminuat
+   (gri in loc de alb).
+      Ultimul joc va fi retinut chiar daca programul a fost inchis.
+ 3)Optiunea Quit inchide aplicatia si revine in terminal.
+
+Navigarea in meniu se face cu ajutorul sagetilor.
+
+   Odata intrati in joc putem muta numerele de pe tabla cu
+tastele w (sus), a (stanga), s (jos), d (dreapta).
+   Intr-un joc nou, tabla va fi goala, cu exceptia a doua casute
+aleatoare care vor contine numere din multimea {2, 4}.
+   Tasta q este utilizata pentru a ne intoarce in meniu, iar tasta r
+este folosita pentru a anula ultima mutare.
+   Undo se poate face o singura data.
+   La intrarea intr-un joc nou, optiunea Undo nu este disponibila.
+
+!IMPORTANT! Dupa fiecare optiune aleasa se apasa tasta Enter.
+
+   Dupa 4 secunde de inactivitate, jocul va muta singur celulele,
+astfel incat sa fie eliberate cat mai multe.
+
+   In panoul din dreapta sunt disponibile informatii despre scorul curent,
+cel mai bun scor pana in acel moment si numarul de mutari realizate.
+   Numarul de mutari scade atunci cand selectam optiunea Undo.
+
+   Tot in panoul din dreapta sunt prezentate comenzile valide la un moment dat
+si data si timpul in ore si minute.
+   Cat timp nici o mutare nu este facuta jocul intra in "sleep", ceea ce
+inseamna ca timpul nu se actualizeaza. El se va actualiza automat la cel
+mult 4 secunde, atunci cand este realizata mutarea automata.
+
+   Atunci cand o mutare nu este valida, iar utilizatorul incearca acea
+mutare, jocul nu se va modifica (nici nu se va genera un numar nou din
+multimea {2, 4}).
+
+   Jocul se termina fie in cazul in care o celula a ajuns la valoarea 2048
+(caz in care jocul este castigat), fie in cazul in care tabla s-a umplut si
+nu mai exista nicio mutare valida (caz in care jocul este pierdut).
+
+   La terminarea jocului, va fi afisat un mesaj peste tabla de joc care anunta
+utilizatorul cum s-a incheiat jocul. Acest mesaj acopera doar partial tabla
+de joc pentru ca aceasta sa fie in continuare vizibila. In acest stadiu,
+jucatorul are acces in continuare la datele din panou.
+   Pentru a reveni la meniu se apasa tasta Enter.
+
+---------------------------- Implementare ---------------------------------
+
+Cerinta 1:
+   Din functia "main", se intra in functia de meniu. In aceasta de
+initializeaza meniul si sunt afisate, cu ajutorul functiei "menu_display"
+optiunile disponibile pentru meniu.
+   Pentru a oberva ce optiune este selectata, fundalul scrisului este colorat
+cu culoarea magenta.
+   In meniu se intra intr-un "while" infinit, care asteapta de la utilizator
+introducerea uneia din tastele: sageata sus, sageata jos sau "Enter".
+   Pentru a tine cont ce optiune am selectat am folosit o variabila "choice"
+care retine un numar de la 1 la 3.
+   1 inseamna optiunea New Game, 2 inseamna optiunea Resume si 3 inseamna
+optiunea Quit.
+   Cand este apasata tasta "Enter" ('\n'), programul apeleaza functia
+"menu_option" care cu ajutorul variabilei "choice" si unui switch-case
+apeleaza, in continuare functiile corespunzatoare.
+   In cazul New Game, sunt apelate functia de initializare a jocului
+("init_game") si functia care gestioneaza efectiv tabla de joc ("game").
+   In cazul Resume, se poate apela functia "game", doar daca numarul de mutari
+este mai mare ca 0. Daca numarul de mutari este 0, inseamna ca nu exista
+niciun joc inceput la care sa ne intoarcem.
+   In cazul Quit, se inchide fereastra, se iese in terminal si se reseteaza
+cursorul care, la intrarea in joc, devenise invizibil.
+
+Cerinta 2:
+   Tabla de joc este retinuta in program cu ajutorul unei matrice de 4x4,
+numita "nr", care se afla in structura "board", de tip "mat".
+   Jocul se afiseaza in functia "game_display", unde sunt initializate
+culorile care nu sunt deja definite in "ncurses" si sunt create perechi
+cu functia "init_pair", care cupleaza o culoarea de fundal si culoarea
+scrisului si atribuie perechii un id.
+   Fiind ca id-ul poate fi atribuit intre 1 si 255 (0 fiind id-ul pentru
+perechea de baza: fundal negru, scris alb) am utilizat logaritmul in baza
+2 din functia "math.h", pentru a face corespondenta intre valoare si id.
+   In functia "display_game" este apelata si functia "display_panel" care
+afiseaza panoul plasat in dreapta tablei de joc si toate informatiile
+prezentate la capitolul "Utilizare".
+   Initializarea tablei de joc se face in functia "init_game", setand
+toate valoriile matricei pe 0, dar si scorul si numarul de mutari ca
+fiind nule. La afisarea tablei, daca valoarea din matrice este 0,
+pe ecran se va afisa spatiu.
+   Apoi se vor genera 2 numere aleatoare cu functia "new_number".
+   Va fi folosita aceeasi functie si pentru generarea ulterioara de
+numere.
+   Pentru a verifica faptul ca numerele sunt generate pe pozitii libere,
+programul retine pozitiile casutelor libere dupa cele 2 coordonate,
+in vectorii x si y din structura zero.
+   Cand se doreste generarea unui nou numar, se genereaza de fapt
+o pozitie din vectorul "vect", de tip "zero", si se iau coordonatele
+casutei din cei 2 vectori.
+   Dupa ce am pus o valoare intr-o casuta libera, se elimina
+coordonatele ei din cei 2 vectori.
+
+Cerinta 3:
+   Deplasare celulor este realizata cu ajutorul functiilor "up",
+"down", "left" si "right".
+   Tot in aceste functii se calculeaza si valoarea pe care mutarea
+o adauga la scorul curent, dar si daca matricea "nr" a fost modificata.
+   Astfel, vom stii daca comanda a fost valida sau nu, pentru a afla
+daca trebuie astepata o alta comanda si daca va fi generat sau nu un
+nou numar.
+   In functia "game", cu ajutorul functiei "select", se citeste ce
+introduce utilizatorul de la tastatura. In cazul in care este apasata
+tasta "Enter", se preia tasta si se apeleaza functia "game_option". Aceasta,
+prin intermediul unui "switch-case" si variabilei "key" (care retine tasta),
+face operatiile corepunzatoare mutarii.
+   Inainte de a apela functiile care muta valorile din tabla de joc, este
+copiata matricea curenta "nr" in matricea "copy" din structura board si scorul
+curent "score" este retinut in varibila "copy_scr" din structura "info".
+   Dupa fiecare mutare se actualizeaza vectorul "vect" (descris la Cerinta 2),
+pentru a stii care sunt pozitiile in care se pot genera valorile noi.
+
+Cerinta 4:
+   In functia "game", functia "select" returneaza valoarea 0 dupa 4 secunde,
+ceea ce face ca, prin intermediul lui "switch-case", sa fie apelata functia
+"best_option".
+   Aceasta functie copiaza in matricea "test" valorile tablei curente, modifica
+matricea "test" cu functiile "up", "down", "left" si "right", pe rand, si
+numara in fiecare caz cate casute sunt libere.
+   In functie de directia aleasa, functia "best_option" returneaza tasta
+care trebuie apasata.
+   Apoi, in functia "game", este apelata functia "game_option" cu valoarea
+returnata de best_option, ca si cum ar fi fost introdusa de jucator.
+
+Cerinta 5:
+   Dupa fiecare modificare a matricei "nr", ce retine tabla curenta de joc,
+se apeleaza functia "check" care parcurge tabla si verifica daca una din
+celule a ajuns la valoarea 2048 sau daca tabla este plina.
+   Daca tabla s-a umplut, folosind aceleasi procedeu ca la Cerinta 4
+(cu ajutorul matricei "test"), se verifica daca mai exista mutari posibile.
+   Daca s-a ajuns la valoarea 2048 jocul este castigat, iar daca nu mai
+exista mutari valide, jocul este pierdut.
+   In ambele cazuri se afiseaza un mesaj corespunzator cu functia "final_msg".
+
+!OBSERVATII!
+   Datele sunt salvate in 3 structuri: "info", "board" si "vect", declarate in
+"main" si a caror pointeri sunt transmisi in fiecare functie in care este
+nevoie.
+   In fisierul "save.txt" sunt salvate cele 3 structuri atunci cand jocul este
+inchis, pentru a putea reveni la jocul inceput.
+   In arhiva nu exista fisierul "save.txt", acesta va fi creat de program
+atunci cand se va dori scrierea in el (cand este aleasa optiunea "Quit").
+   Initial, fiind ca nu exista fisierul "save.txt", numarul de mutari si cel
+mai bun scor ("moves" si "h_score" din structura "info") sunt initializate
+in "main".
+   Arhiva va contine si fisierul "ascii_art.txt", utilizat pentru a desena
+modelul prezent in "meniu".
